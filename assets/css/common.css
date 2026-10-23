@@ -23,12 +23,12 @@
   --accent-amber: #f59e0b;
   --accent-rose: #f43f5e;
 
-  /* 중립 색상 (배경 및 텍스트) - 노란색 테마 적용 */
-  --bg-main: #fef9c3; /* 부드럽고 산뜻한 레몬 옐로우 배경 */
+  /* 중립 색상 (배경 및 텍스트) - 하늘색 테마 적용 */
+  --bg-main: #f0f9ff; /* 시원하고 맑은 소프트 스카이블루 배경 */
   --bg-surface: #ffffff;
   --bg-surface-elevated: #ffffff;
-  --border-light: #fef08a; /* 노란색 테마에 맞춘 부드러운 테두리 */
-  --border-subtle: #fef9c3;
+  --border-light: #bae6fd; /* 하늘색 테마에 맞춘 부드러운 테두리 */
+  --border-subtle: #f0f9ff;
 
   --text-main: #0f172a;
   --text-muted: #64748b;
