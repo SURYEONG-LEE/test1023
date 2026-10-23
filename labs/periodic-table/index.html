@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>장주기율표 (전이금속 포함 118원소) | Science Lab Hub</title>
+  <meta name="description" content="1족부터 18족, 1주기부터 7주기 전이금속(3~12족) 및 란타넘·악티늄족을 모두 포함한 표준 인터랙티브 장주기율표 가상 실험실">
+
+  <!-- 공통 스타일시트 -->
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <!-- 주기율표 실험 전용 스타일시트 -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-lab-id="periodic-table">
+  <!-- 상단 공통 네비게이션은 assets/js/lab-nav.js에 의해 자동 주입됩니다 -->
+
+  <main class="lab-main-container">
+    <!-- 탐구 헤더 섹션 -->
+    <header class="lab-hero-card">
+      <div class="hero-left">
+        <div class="subject-badge">
+          <span>🧪</span> 화학 탐구 · 표준 장주기율표 (Extended Periodic Table)
+        </div>
+        <h1 class="lab-title">전이금속을 포함한 인터랙티브 장주기율표</h1>
+        <p class="lab-subtitle">
+          3족~12족의 <strong>전이금속(Transition Metals)</strong>을 비롯하여 1번(수소)부터 118번(오가네손)까지의 모든 원소를 탐구할 수 있는 표준 장주기율표입니다.<br>
+          원소 카드를 클릭하여 <strong>보어 원자 모형, 전자 배치(K~Q껍질), 동위 원소별 양성자·중성자 수, 산화수 및 화학적 성질</strong>을 확인해 보세요.
+        </p>
+      </div>
+      
+      <!-- 통계 및 빠른 요약 카드 -->
+      <div class="hero-stats">
+        <div class="stat-box">
+          <span class="stat-num" id="total-elements-count">118</span>
+          <span class="stat-lbl">전체 원소 수</span>
+        </div>
+        <div class="stat-box highlight-stat">
+          <span class="stat-num" style="color: #ea580c;">3~12족</span>
+          <span class="stat-lbl">전이금속 구역</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">1~18</span>
+          <span class="stat-lbl">족 (Group)</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">1~7</span>
+          <span class="stat-lbl">주기 (Period)</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 탐구 툴바: 주기성 모드 선택 및 원소 분류 필터 -->
+    <section class="toolbar-section" aria-label="주기성 및 분류 컨트롤">
+      <!-- 1. 주기성 분석 모드 선택 -->
+      <div class="mode-selector-wrapper">
+        <span class="toolbar-label">🔍 주기성 탐구 관점:</span>
+        <div class="mode-btn-group" role="tablist">
+          <button class="mode-btn active" data-mode="category">
+            <span>🏷️</span> 원소 분류별 (전이금속 강조)
+          </button>
+          <button class="mode-btn" data-mode="state">
+            <span>🌡️</span> 상온 상태 (고체/액체/기체)
+          </button>
+          <button class="mode-btn" data-mode="valence">
+            <span>⚡</span> 최외각 전자 수
+          </button>
+          <button class="mode-btn" data-mode="radius">
+            <span>⚪</span> 원자 반지름 경향성
+          </button>
+          <button class="mode-btn" data-mode="ionization">
+            <span>🔥</span> 제1 이온화 에너지
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. 원소 분류 빠른 필터 -->
+      <div class="filter-wrapper">
+        <span class="toolbar-label">📌 원소 계열 필터:</span>
+        <div class="filter-pill-group">
+          <button class="filter-pill active" data-filter="all">전체 원소 (118)</button>
+          <button class="filter-pill special-filter" data-filter="transition">⚡ 전이 금속 (3~12족)</button>
+          <button class="filter-pill" data-filter="alkali">알칼리 금속 (1족)</button>
+          <button class="filter-pill" data-filter="alkali-earth">알칼리 토금속 (2족)</button>
+          <button class="filter-pill" data-filter="lanthanide">란타넘족</button>
+          <button class="filter-pill" data-filter="actinide">악티늄족</button>
+          <button class="filter-pill" data-filter="post-transition">전이후 금속</button>
+          <button class="filter-pill" data-filter="metalloid">준금속</button>
+          <button class="filter-pill" data-filter="nonmetal">반응성 비금속</button>
+          <button class="filter-pill" data-filter="halogen">할로젠 (17족)</button>
+          <button class="filter-pill" data-filter="noble">비활성 기체 (18족)</button>
+        </div>
+      </div>
+
+      <!-- 동적 범례(Legend) 표시줄 -->
+      <div class="dynamic-legend" id="dynamic-legend">
+        <!-- JS로 현재 모드에 따라 범례가 동적으로 표시됩니다 -->
+      </div>
+    </section>
+
+    <!-- 주기율표 보드 영역 -->
+    <section class="periodic-board-container" aria-label="표준 장주기율표">
+      <div class="board-scroll-wrapper">
+        <!-- 상단 족(Group) 라벨 (1~18) -->
+        <div class="group-header-row" id="group-headers">
+          <div class="corner-cell">족 \ 주기</div>
+          <!-- 1부터 18까지 족 번호가 JS로 삽입됩니다 -->
+        </div>
+
+        <div class="board-body-row">
+          <!-- 좌측 주기(Period) 라벨 (1~7) -->
+          <div class="period-header-col" id="period-headers">
+            <!-- 1부터 7까지 주기 번호가 JS로 삽입됩니다 -->
+          </div>
+
+          <!-- 실제 18열 × 7행 본체 원소 그리드 -->
+          <div class="elements-grid" id="elements-grid">
+            <!-- JavaScript(script.js)에 의해 본체 원소 카드가 배치됩니다 -->
+          </div>
+        </div>
+
+        <!-- 하단: 란타넘족 및 악티늄족 (별도 2행 블록) -->
+        <div class="f-block-section">
+          <div class="f-block-row">
+            <div class="f-block-label lanthanide-lbl">
+              <span>* 란타넘족</span>
+              <small>57-71</small>
+            </div>
+            <div class="f-block-grid" id="lanthanides-grid">
+              <!-- La ~ Lu 원소 카드 -->
+            </div>
+          </div>
+          <div class="f-block-row">
+            <div class="f-block-label actinide-lbl">
+              <span>** 악티늄족</span>
+              <small>89-103</small>
+            </div>
+            <div class="f-block-grid" id="actinides-grid">
+              <!-- Ac ~ Lr 원소 카드 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="board-helper-notes">
+        <p>💡 <strong>장주기율표 활용 팁:</strong></p>
+        <ul>
+          <li><strong>3~12족(오렌지/호박색 구역)</strong>이 바로 <strong>전이금속(Transition Metals)</strong>입니다. d-오비탈에 전자가 채워지며 철(Fe), 구리(Cu), 금(Au), 은(Ag), 티타늄(Ti) 등 산업과 생명체에 필수적인 원소들이 속해 있습니다.</li>
+          <li>상단의 <strong>[⚡ 전이 금속]</strong> 필터를 누르면 전이금속들만 집중적으로 하이라이트됩니다.</li>
+          <li>족 번호(1~18족)나 주기 번호(1~7주기)를 누르면 해당 열 또는 행 전체가 하이라이트됩니다.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       원소 상세 정보 모달 창 (Modal Window)
+       ========================================================================== -->
+  <div class="modal-overlay hidden" id="element-modal" role="dialog" aria-modal="true" aria-labelledby="modal-element-title">
+    <div class="modal-card">
+      <!-- 모달 상단 헤더 -->
+      <header class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-badge-wrapper">
+            <span class="modal-cat-badge" id="m-category">전이 금속</span>
+            <span class="modal-period-group-badge" id="m-period-group">4주기 · 8족</span>
+            <span class="modal-state-badge" id="m-state">실온 고체</span>
+            <span class="modal-block-badge" id="m-block">d-블록</span>
+          </div>
+          <h2 class="modal-title" id="modal-element-title">
+            <span id="m-name">철</span>
+            <span class="modal-symbol-sub" id="m-symbol">Fe</span>
+            <span class="modal-num-sub">(원자 번호 <strong id="m-number">26</strong>번)</span>
+          </h2>
+          <p class="modal-eng-name" id="m-eng-name">Iron / Ferrum</p>
+        </div>
+        <button class="modal-close-btn" id="modal-close-btn" aria-label="모달 닫기">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <!-- 모달 본문 (2단 레이아웃) -->
+      <div class="modal-body-grid">
+        <!-- 1열: 보어 원자 모형 및 전자 배치 -->
+        <div class="modal-col bohr-column">
+          <div class="section-subhead">
+            <h3>🔬 보어 원자 모형 (Bohr Model)</h3>
+            <span class="bohr-live-indicator">실시간 전자 궤도 공전 중</span>
+          </div>
+
+          <!-- 보어 모형 애니메이션 캔버스 -->
+          <div class="bohr-canvas-box">
+            <canvas id="bohr-canvas" width="280" height="280"></canvas>
+            <div class="canvas-legend">
+              <span class="leg-nucleus">🔴 원자핵 (양성자 <span id="m-canvas-protons">26</span>+)</span>
+              <span class="leg-electron">🔵 전자 (<span id="m-canvas-electrons">26</span>e⁻)</span>
+            </div>
+          </div>
+
+          <!-- 전자 배치 및 최외각 전자 정보 -->
+          <div class="electron-details-card">
+            <div class="detail-row">
+              <span class="lbl">최외각 전자 수:</span>
+              <span class="val-highlight" id="m-valence-electrons">2개</span>
+            </div>
+            <div class="detail-row">
+              <span class="lbl">전자 껍질별 전자수 (K~Q):</span>
+              <span class="val-shell" id="m-electron-config">2, 8, 14, 2</span>
+            </div>
+            <div class="detail-row">
+              <span class="lbl">주요 산화수 (Oxidation States):</span>
+              <span class="val-ox" id="m-oxidation-states">+2, +3</span>
+            </div>
+            <p class="valence-meaning-tip" id="m-valence-desc">
+              ※ 전이금속은 d-오비탈 전자가 화학 반응에 참여하여 다양한 산화수를 형성하는 독특한 특성을 가집니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- 2열: 핵입자, 동위 원소 탐구 및 화학적 성질 -->
+        <div class="modal-col info-column">
+          <!-- 동위 원소 및 핵입자(양성자/중성자/질량수) 탐구 박스 -->
+          <div class="isotope-explorer-card">
+            <div class="section-subhead">
+              <h3>⚛️ 핵입자와 동위 원소 (Isotopes) 탐구</h3>
+              <span class="isotope-badge">동위 원소를 선택해 보세요</span>
+            </div>
+
+            <!-- 동위 원소 선택 버튼 목록 (JS로 동적 생성) -->
+            <div class="isotope-selector-bar" id="isotope-selector-bar">
+              <!-- 예: Fe-56, Fe-54 등 동위 원소 버튼 -->
+            </div>
+
+            <!-- 선택된 동위 원소 기준 입자 수치 표 -->
+            <div class="particles-grid">
+              <div class="particle-item">
+                <span class="p-icon">🔴</span>
+                <span class="p-label">양성자 수 (p⁺)</span>
+                <span class="p-value" id="m-protons">26</span>
+                <span class="p-sub">= 원자 번호</span>
+              </div>
+              <div class="particle-item highlight-item">
+                <span class="p-icon">⚪</span>
+                <span class="p-label">중성자 수 (n⁰)</span>
+                <span class="p-value" id="m-neutrons">30</span>
+                <span class="p-sub">= 질량수 - 양성자 수</span>
+              </div>
+              <div class="particle-item highlight-item">
+                <span class="p-icon">⚖️</span>
+                <span class="p-label">질량수 (Mass Number)</span>
+                <span class="p-value" id="m-mass-number">56</span>
+                <span class="p-sub">선택된 동위 원소 기준</span>
+              </div>
+              <div class="particle-item">
+                <span class="p-icon">📊</span>
+                <span class="p-label">평균 원자량 (Atomic Weight)</span>
+                <span class="p-value" id="m-atomic-weight">55.845</span>
+                <span class="p-sub">동위 원소 천연 비율 반영</span>
+              </div>
+            </div>
+
+            <div class="isotope-explanation-box">
+              <span class="info-icon">💡</span>
+              <p id="m-isotope-note">
+                <strong>동위 원소란?</strong> 양성자 수(원자 번호)는 같으나 중성자 수가 달라 <strong>질량수가 서로 다른</strong> 원소입니다.
+              </p>
+            </div>
+          </div>
+
+          <!-- 주요 물리·화학적 성질 및 특징 -->
+          <div class="properties-card">
+            <div class="section-subhead">
+              <h3>📋 주요 물리·화학적 성질 및 응용</h3>
+            </div>
+            
+            <div class="props-mini-table">
+              <div class="p-mini-row">
+                <span class="pm-lbl">원자 반지름:</span>
+                <span class="pm-val" id="m-radius">126 pm</span>
+              </div>
+              <div class="p-mini-row">
+                <span class="pm-lbl">제1 이온화 에너지:</span>
+                <span class="pm-val" id="m-ionization">762.5 kJ/mol</span>
+              </div>
+              <div class="p-mini-row">
+                <span class="pm-lbl">전기 음성도:</span>
+                <span class="pm-val" id="m-electronegativity">1.83</span>
+              </div>
+              <div class="p-mini-row">
+                <span class="pm-lbl">밀도:</span>
+                <span class="pm-val" id="m-density">7.87 g/cm³</span>
+              </div>
+            </div>
+
+            <!-- 화학적 성질 상세 설명 -->
+            <div class="chem-desc-box">
+              <h4 id="m-chem-title">전이 금속의 특징:</h4>
+              <p id="m-chem-desc">
+                철(Fe)은 대표적인 4주기 전이금속으로 강자성을 띠며, 헤모글로빈의 산소 운반 핵심이자 인류 문명의 기초 건축·산업 합금(강철) 소재입니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 모달 푸터: 이전/다음 원소 바로가기 버튼 -->
+      <footer class="modal-footer">
+        <button class="modal-nav-btn" id="btn-prev-elem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span id="prev-elem-label">이전 원소</span>
+        </button>
+        <span class="modal-footer-hint">키보드 [← / →] 방향키로 1~118번 원소 연속 탐색, [ESC]로 닫기</span>
+        <button class="modal-nav-btn" id="btn-next-elem">
+          <span id="next-elem-label">다음 원소</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 공통 데이터 및 내비게이션 주입 스크립트 -->
+  <script src="../../assets/js/labs-data.js"></script>
+  <script src="../../assets/js/lab-nav.js"></script>
+
+  <!-- 주기율표 실험 전용 스크립트 -->
+  <script src="./script.js"></script>
+</body>
+</html>

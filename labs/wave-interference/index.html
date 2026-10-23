@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>파동의 중첩과 간섭 실험 | Science Lab Hub</title>
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-lab-id="wave-interference">
+  <main class="lab-container">
+    <header class="experiment-header">
+      <div class="title-area">
+        <span class="lab-pill">물리 탐구 · LAB-03</span>
+        <h1>파동의 중첩과 간섭 시각화 실험실</h1>
+        <p>두 파동이 만날 때 일어나는 중첩의 원리(보강 간섭 및 상쇄 간섭)를 파동의 위상과 진폭을 조절하며 직접 관찰해 보세요.</p>
+      </div>
+
+      <div class="preset-group">
+        <span class="preset-label">⚡ 빠른 조건 실험:</span>
+        <button class="preset-btn" id="btn-constructive">🟢 완전 보강 간섭 (위상차 0°)</button>
+        <button class="preset-btn" id="btn-destructive">🔴 완전 상쇄 간섭 (위상차 180°)</button>
+        <button class="preset-btn" id="btn-pause">⏸️ 일시 정지 / 재생</button>
+      </div>
+    </header>
+
+    <div class="wave-layout">
+      <section class="canvas-section">
+        <div class="wave-track">
+          <div class="track-info">
+            <span class="track-tag wave1-tag">파동 1 (Wave A)</span>
+            <span class="track-status" id="track-info-1">진폭: 30px, 위상: 0°</span>
+          </div>
+          <canvas id="canvas-wave1" width="700" height="110"></canvas>
+        </div>
+
+        <div class="wave-track">
+          <div class="track-info">
+            <span class="track-tag wave2-tag">파동 2 (Wave B)</span>
+            <span class="track-status" id="track-info-2">진폭: 30px, 위상: 0°</span>
+          </div>
+          <canvas id="canvas-wave2" width="700" height="110"></canvas>
+        </div>
+
+        <div class="wave-track combined-track">
+          <div class="track-info">
+            <span class="track-tag combined-tag">합성파 (Wave A + B)</span>
+            <span class="track-status" id="track-info-combined" style="font-weight: 700; color: var(--primary-700);">
+              상태: 보강 간섭 (진폭 2배)
+            </span>
+          </div>
+          <canvas id="canvas-combined" width="700" height="140"></canvas>
+        </div>
+      </section>
+
+      <aside class="control-sidebar">
+        <div class="ctrl-card">
+          <h2 class="card-title">🎚️ 위상차 (Phase Shift)</h2>
+          <div class="slider-row">
+            <label for="slider-phase">위상차 (Δφ):</label>
+            <span id="disp-phase" class="val-pill">0°</span>
+          </div>
+          <input type="range" id="slider-phase" min="0" max="360" step="15" value="0">
+          <div class="phase-ticks">
+            <span>0° (보강)</span>
+            <span>90°</span>
+            <span>180° (상쇄)</span>
+            <span>270°</span>
+            <span>360°</span>
+          </div>
+        </div>
+
+        <div class="ctrl-card">
+          <h2 class="card-title">📐 파동 진폭 (Amplitude)</h2>
+          <div class="slider-row">
+            <label for="slider-amp1">파동 1 진폭:</label>
+            <span id="disp-amp1" class="val-pill">30 px</span>
+          </div>
+          <input type="range" id="slider-amp1" min="10" max="45" step="5" value="30">
+
+          <div class="slider-row" style="margin-top: 1rem;">
+            <label for="slider-amp2">파동 2 진폭:</label>
+            <span id="disp-amp2" class="val-pill">30 px</span>
+          </div>
+          <input type="range" id="slider-amp2" min="10" max="45" step="5" value="30">
+        </div>
+
+        <div class="ctrl-card explanation-card">
+          <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem;">💡 파동의 간섭 원리</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+            • <strong>보강 간섭:</strong> 두 파동의 위상이 같을 때(마루와 마루, 골과 골) 합성파의 진폭이 합쳐져 극대화됩니다.<br>
+            • <strong>상쇄 간섭:</strong> 두 파동의 위상이 180° 반대일 때(마루와 골) 서로 상쇄되어 진폭이 0이 됩니다.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="../../assets/js/labs-data.js"></script>
+  <script src="../../assets/js/lab-nav.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

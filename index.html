@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Science Lab Hub — 과학 인터랙티브 수업 플랫폼</title>
+  <meta name="description" content="중·고등학교 과학 수업에서 활용할 수 있는 인터랙티브 시뮬레이션 및 개별 탐구 웹 앱 통합 교육 플랫폼입니다.">
+  
+  <!-- 공통 및 로비 스타일시트 -->
+  <link rel="stylesheet" href="./assets/css/common.css">
+  <link rel="stylesheet" href="./assets/css/lobby.css">
+</head>
+<body>
+
+  <!-- 메인 로비 상단 바 -->
+  <header class="lobby-header" role="banner">
+    <div class="lobby-header-container">
+      <div class="brand-wrapper">
+        <div class="brand-icon-box">🔬</div>
+        <div class="brand-text">
+          <h1>Science Lab Hub</h1>
+          <p>중·고등학교 과학 인터랙티브 탐구 플랫폼</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="badge-tag">
+          <span>✨</span> 바이브 코딩 실시간 수업
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 히어로 소개 섹션 -->
+  <main>
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <span>💡</span> 실시간 웹 인터랙티브 실험실
+        </div>
+        <h2 id="hero-title" class="hero-title">
+          보고, 만지고, 조작하며 배우는<br>
+          <span class="gradient-text">디지털 과학 탐구의 세계</span>
+        </h2>
+        <p class="hero-description">
+          교사와 학생이 함께하는 인터랙티브 가상 과학 실험실입니다.<br>
+          원하는 과학 단원과 주제를 선택하여 지금 바로 가상 실험에 참여해 보세요.
+        </p>
+      </div>
+    </section>
+
+    <!-- 검색 및 분류 필터링 컨트롤 -->
+    <section class="filter-container" aria-label="탐구 수업 필터링">
+      <div class="controls-card">
+        <!-- 상단 행: 과목 선택 탭 및 키워드 검색창 -->
+        <div class="controls-top-row">
+          <div class="subject-tabs" role="tablist" aria-label="과목별 분류">
+            <button class="filter-tab active" data-subject="all" role="tab">전체 과목</button>
+            <button class="filter-tab" data-subject="물리" role="tab">물리</button>
+            <button class="filter-tab" data-subject="화학" role="tab">화학</button>
+            <button class="filter-tab" data-subject="생명과학" role="tab">생명과학</button>
+            <button class="filter-tab" data-subject="지구과학" role="tab">지구과학</button>
+          </div>
+
+          <div class="search-box-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              id="lab-search-input" 
+              class="search-input" 
+              placeholder="수업명, 개념 태그, 단원 검색..." 
+              aria-label="탐구 수업 검색"
+            >
+          </div>
+        </div>
+
+        <!-- 하단 행: 학년 필터 및 결과 건수 안내 -->
+        <div class="controls-bottom-row">
+          <div class="grade-filters" aria-label="학년 필터">
+            <span style="font-weight: 600; font-size: 0.8rem; margin-right: 0.3rem;">대상:</span>
+            <button class="grade-btn active" data-grade="all">전체 학년</button>
+            <button class="grade-btn" data-grade="중학교">중학교</button>
+            <button class="grade-btn" data-grade="고등학교">고등학교</button>
+          </div>
+          <div id="labs-count-display" style="font-weight: 600; color: var(--primary-700);">
+            총 3개의 탐구 수업
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 교사용 안내 / 새 실험 추가 가이드 배너 -->
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 1.5rem;">
+      <div class="guide-callout">
+        <div class="guide-callout-text">
+          <h4>🧪 새로운 탐구 수업을 지속적으로 추가할 수 있습니다</h4>
+          <p>교사가 바이브 코딩으로 만든 새 실험 폴더를 <code>labs/</code>에 넣고 <code>labs-data.js</code>에 등록하면 즉시 연동됩니다.</p>
+        </div>
+        <a href="#how-to-add" class="guide-doc-link" onclick="alert('README.md 파일의 새 실험 추가 가이드를 참고하세요!\n\n1. labs/새실험폴더/ 생성\n2. assets/js/labs-data.js에 데이터 추가\n3. 공통 네비게이션 적용'); return false;">
+          <span>📖 추가 가이드 확인</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 탐구 수업 카드 그리드 -->
+    <section class="labs-grid-section" aria-label="탐구 수업 목록">
+      <div id="labs-grid" class="labs-grid">
+        <!-- JavaScript(lobby.js)에 의해 동적으로 카드가 렌더링됩니다 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- 메인 푸터 -->
+  <footer class="lobby-footer" role="contentinfo">
+    <div class="footer-inner">
+      <p style="font-weight: 600; color: var(--text-main);">Science Lab Hub — 과학 인터랙티브 수업 플랫폼</p>
+      <p>중·고등학교 과학교육을 위한 개방형 탐구 웹 플랫폼 | 크롬북, 태블릿, PC 완벽 지원</p>
+      <p style="font-size: 0.8rem; color: var(--text-light);">순수 웹 표준 기술(HTML/CSS/JS) 기반으로 서버 없이 GitHub Pages에서 완벽하게 작동합니다.</p>
+    </div>
+  </footer>
+
+  <!-- 메타데이터 및 로비 로직 스크립트 (상대 경로) -->
+  <script src="./assets/js/labs-data.js"></script>
+  <script src="./assets/js/lobby.js"></script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기체 법칙 가상 실험실 (보일·샤를·보일-샤를) | Science Lab Hub</title>
+  <meta name="description" content="고등학교 과학 기체의 압력, 부피, 온도 사이의 관계를 시뮬레이션과 실시간 그래프, 5단계 탐구 활동으로 학습하는 가상 실험실">
+
+  <!-- Chart.js CDN (실시간 과학 그래프 렌더링용) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- 공통 스타일 및 네비게이션 CSS -->
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <!-- 기체 법칙 실험 전용 스타일 -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-lab-id="gas-laws">
+  <!-- 상단 공통 네비게이션은 assets/js/lab-nav.js에 의해 자동 주입됩니다 -->
+
+  <main class="lab-main-container">
+    <!-- 실험실 헤더 카드 -->
+    <header class="lab-hero-card">
+      <div class="hero-text-area">
+        <div class="subject-badge">
+          <span>🎈</span> 고등학교 과학 · 기체의 성질과 열
+        </div>
+        <h1 class="lab-title">기체 법칙 가상 실험실 (Gas Laws Virtual Lab)</h1>
+        <p class="lab-desc">
+          밀폐된 실린더 속 기체 입자의 거동을 관찰하고, <strong>압력(P), 부피(V), 온도(T)</strong>를 조작하며
+          <strong>보일 법칙, 샤를 법칙, 보일·샤를 법칙</strong>을 스스로 발견하고 분석해 보세요.
+        </p>
+      </div>
+
+      <!-- 탐구 모드 선택 3단 탭 -->
+      <nav class="law-tabs-nav" aria-label="기체 법칙 탐구 모드">
+        <button class="law-tab-btn active" data-mode="boyle">
+          <span class="tab-badge">탐구 ①</span>
+          <strong>보일 법칙</strong>
+          <small>온도(T) 일정 · P-V 반비례</small>
+        </button>
+        <button class="law-tab-btn" data-mode="charles">
+          <span class="tab-badge">탐구 ②</span>
+          <strong>샤를 법칙</strong>
+          <small>압력(P) 일정 · T-V 비례</small>
+        </button>
+        <button class="law-tab-btn" data-mode="combined">
+          <span class="tab-badge">탐구 ③</span>
+          <strong>보일·샤를 법칙</strong>
+          <small>기체량 일정 · 종합 관계</small>
+        </button>
+      </nav>
+    </header>
+
+    <!-- 변인 관계 안내 배너 -->
+    <section class="variables-bar" aria-label="실험 변인 안내">
+      <div class="var-badge-group">
+        <div class="var-item constant-var">
+          <span class="v-tag">일정하게 유지 (통제 변인)</span>
+          <strong id="label-constant-var">온도 (T = 300 K)</strong>
+        </div>
+        <div class="var-item manipulated-var">
+          <span class="v-tag">직접 조작 (조작 변인)</span>
+          <strong id="label-manipulated-var">외부 압력 (P)</strong>
+        </div>
+        <div class="var-item responding-var">
+          <span class="v-tag">결과 관찰 (종속 변인)</span>
+          <strong id="label-responding-var">기체 부피 (V)</strong>
+        </div>
+      </div>
+      <div class="model-note-callout" title="이상 기체 모형 안내">
+        <span>💡 <strong>이상 기체 가정:</strong> 기체 분자 자체의 크기와 분자 간 상호작용은 무시된 모형입니다.</span>
+      </div>
+    </section>
+
+    <!-- 시뮬레이터 본문 2열 그리드 -->
+    <div class="lab-workspace-grid">
+      <!-- 좌측 1열: 피스톤 실린더 장치 및 게이지 -->
+      <section class="apparatus-section">
+        <!-- 3개 상태 디지털 계측기 -->
+        <div class="digital-gauges">
+          <div class="gauge-box pressure-gauge">
+            <span class="g-name">압력 (Pressure)</span>
+            <span class="g-val" id="disp-pressure">1.00 <small>atm</small></span>
+          </div>
+          <div class="gauge-box volume-gauge">
+            <span class="g-name">부피 (Volume)</span>
+            <span class="g-val" id="disp-volume">10.00 <small>L</small></span>
+          </div>
+          <div class="gauge-box temp-gauge">
+            <span class="g-name">온도 (Temperature)</span>
+            <span class="g-val" id="disp-temp-k">300 <small>K</small></span>
+            <span class="g-sub" id="disp-temp-c">(26.85 ℃)</span>
+          </div>
+        </div>
+
+        <!-- 실린더 및 피스톤 인터랙티브 캔버스 컨테이너 -->
+        <div class="cylinder-visual-container">
+          <!-- 피스톤 상단 조립체 (추 그래픽) -->
+          <div class="piston-assembly" id="piston-assembly">
+            <div class="piston-handle"></div>
+            <div class="piston-weights-container" id="piston-weights-container">
+              <!-- JS로 압력에 따른 추 아이콘이 생성됩니다 -->
+            </div>
+            <div class="piston-head-bar">
+              <span class="piston-label" id="piston-force-label">누르는 힘: 1.0 atm</span>
+            </div>
+          </div>
+
+          <!-- 실린더 챔버 및 기체 입자 Canvas -->
+          <div class="cylinder-glass">
+            <canvas id="gas-canvas" width="400" height="340"></canvas>
+            <!-- 피스톤 바닥 눈금자 -->
+            <div class="volume-scale">
+              <span>20L -</span>
+              <span>15L -</span>
+              <span>10L -</span>
+              <span>5L -</span>
+            </div>
+          </div>
+
+          <!-- 하단 가열/냉각 버너 -->
+          <div class="thermal-control-bar" id="thermal-bar">
+            <div class="flame-effect" id="flame-effect"></div>
+            <span class="thermal-label" id="thermal-status-label">상온 유지 중 (300 K)</span>
+          </div>
+        </div>
+
+        <!-- 실린더 입자 관찰 팁 -->
+        <div class="particle-motion-hint">
+          <span>👀 <strong>입자 운동 관찰 포인트:</strong> 온도가 높아지면 입자의 움직임이 확연히 빨라지며, 피스톤을 눌러 부피를 줄이면 입자 간 거리가 좁아져 벽면에 충돌하는 빈도가 급증합니다.</span>
+        </div>
+      </section>
+
+      <!-- 우측 2열: 조작 슬라이더, 실시간 그래프, 수식 검증, 데이터 기록 -->
+      <section class="analysis-section">
+        <!-- 1. 조작 컨트롤 패널 -->
+        <div class="ctrl-card">
+          <div class="card-head">
+            <h3>🎛️ 변인 조작기</h3>
+            <button class="reset-btn" id="btn-reset-values" title="기본값으로 되돌리기">↺ 기본 상태로 초기화</button>
+          </div>
+
+          <!-- 압력 조작 슬라이더 (보일, 보일·샤를 모드) -->
+          <div class="control-row" id="row-ctrl-pressure">
+            <div class="row-label">
+              <label for="slider-pressure"><strong>외부 압력 (P):</strong></label>
+              <span class="ctrl-value" id="val-slider-pressure">1.00 atm</span>
+            </div>
+            <input type="range" id="slider-pressure" min="0.5" max="3.0" step="0.25" value="1.0">
+            <div class="slider-marks">
+              <span>0.5 atm</span>
+              <span>1.0</span>
+              <span>2.0</span>
+              <span>3.0 atm</span>
+            </div>
+          </div>
+
+          <!-- 온도 조작 슬라이더 (샤를, 보일·샤를 모드) -->
+          <div class="control-row" id="row-ctrl-temp">
+            <div class="row-label">
+              <label for="slider-temp"><strong>절대 온도 (T):</strong></label>
+              <span class="ctrl-value" id="val-slider-temp">300 K (26.9 ℃)</span>
+            </div>
+            <input type="range" id="slider-temp" min="150" max="600" step="25" value="300">
+            <div class="slider-marks">
+              <span>150 K (-123℃)</span>
+              <span>300 K (상온)</span>
+              <span>450 K</span>
+              <span>600 K (327℃)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 실시간 과학 그래프 -->
+        <div class="graph-card">
+          <div class="card-head">
+            <h3 id="graph-title">📈 실시간 관계 그래프</h3>
+            <span class="graph-sub" id="graph-subtitle">보일 법칙: 압력(P) vs 부피(V)</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="gas-law-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- 3. 실시간 법칙 공식 검증 및 데이터 수집 바 -->
+        <div class="verification-card">
+          <div class="formula-banner" id="formula-display">
+            P × V = k (일정)
+          </div>
+          <div class="calc-live-result" id="calc-live-result">
+            1.00 atm × 10.00 L = <strong>10.00 atm·L (상수 유지)</strong>
+          </div>
+          
+          <div class="data-record-action">
+            <button class="record-btn" id="btn-record-data">
+              <span>📋</span> 현재 상태 데이터 표에 기록하기
+            </button>
+            <span class="record-count" id="record-count-text">기록된 데이터: 0개</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 하단 5단계 학생 자기주도 탐구 활동 워크북 -->
+    <section class="inquiry-workbook-section" aria-label="학생 5단계 탐구 활동">
+      <div class="workbook-header">
+        <h2>🧑‍🔬 학생 자기주도 탐구 활동 (5단계 프로세스)</h2>
+        <p>단순한 조작을 넘어, <strong>예측 - 실험 - 분석 - 정리 - 실생활 적용</strong>의 과학 탐구 과정을 완수해 보세요.</p>
+      </div>
+
+      <!-- 탐구 단계 탭 -->
+      <div class="step-nav-bar">
+        <button class="step-tab-btn active" data-step="1">1. 예측하기 (Predict)</button>
+        <button class="step-tab-btn" data-step="2">2. 실험 및 데이터 기록 (Experiment)</button>
+        <button class="step-tab-btn" data-step="3">3. 분석하기 (Analyze)</button>
+        <button class="step-tab-btn" data-step="4">4. 정리하기 (Summarize)</button>
+        <button class="step-tab-btn" data-step="5">5. 실생활 적용하기 (Apply)</button>
+      </div>
+
+      <!-- 단계별 본문 컨테이너 -->
+      <div class="step-content-box">
+        <!-- 1단계: 예측하기 -->
+        <div class="step-pane active" id="step-pane-1">
+          <div class="inquiry-card">
+            <h3 class="inq-title">🤔 [예측하기] 실험 변인을 조작하기 전에 생각해보세요!</h3>
+            <p class="inq-question" id="quiz-question">
+              온도가 일정할 때, 주사기(실린더)의 피스톤을 눌러 외부 압력을 2배로 증가시키면 기체의 부피는 어떻게 변할까요?
+            </p>
+            <div class="quiz-options-group" id="quiz-options">
+              <button class="quiz-opt-btn" data-ans="correct">부피가 1/2로 줄어든다.</button>
+              <button class="quiz-opt-btn" data-ans="wrong">부피가 2배로 늘어난다.</button>
+              <button class="quiz-opt-btn" data-ans="wrong">부피는 변하지 않는다.</button>
+            </div>
+            <div class="quiz-feedback hidden" id="quiz-feedback"></div>
+          </div>
+        </div>
+
+        <!-- 2단계: 실험 및 데이터 표 -->
+        <div class="step-pane" id="step-pane-2">
+          <div class="inquiry-card">
+            <div class="card-head">
+              <h3 class="inq-title">📊 [실험 및 측정] 누적된 실험 측정값 분석표</h3>
+              <button class="clear-data-btn" id="btn-clear-table">표 비우기</button>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;">
+              슬라이더를 조작한 후 위의 <strong>[현재 상태 데이터 표에 기록하기]</strong> 버튼을 누르면 이 표에 측정값이 자동으로 누적됩니다.
+            </p>
+            <div class="table-scroll">
+              <table class="data-table" id="experiment-data-table">
+                <thead>
+                  <tr>
+                    <th>측정 번호</th>
+                    <th>압력 (P, atm)</th>
+                    <th>부피 (V, L)</th>
+                    <th>절대온도 (T, K)</th>
+                    <th>섭씨온도 (℃)</th>
+                    <th>계산값 (<span id="th-calc-label">P × V</span>)</th>
+                  </tr>
+                </thead>
+                <tbody id="table-body">
+                  <tr>
+                    <td colspan="6" style="text-align:center; color:var(--text-light); padding:1.5rem;">
+                      기록된 데이터가 없습니다. 상단의 [현재 상태 데이터 표에 기록하기] 버튼을 눌러보세요.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3단계: 분석하기 -->
+        <div class="step-pane" id="step-pane-3">
+          <div class="inquiry-card">
+            <h3 class="inq-title">🔍 [분석하기] 그래프와 측정 데이터 사이의 규칙성 찾기</h3>
+            <div class="analysis-prompt-list">
+              <div class="prompt-box">
+                <h4>Q1. 표에서 계산한 곱 또는 나눗셈 결과값의 공통점은 무엇인가요?</h4>
+                <p id="analysis-ans-1">
+                  측정 오차를 제외하면 <strong>거의 일정한 상수 값</strong>을 유지합니다. 이는 두 변인 사이에 비례 또는 반비례 관계가 성립함을 의미합니다.
+                </p>
+              </div>
+              <div class="prompt-box">
+                <h4>Q2. 그래프의 곡선/직선 형태가 나타내는 물리적 의미는?</h4>
+                <p id="analysis-ans-2">
+                  보일 법칙 그래프는 $y = k/x$ 꼴의 <strong>직각쌍곡선(반비례)</strong>이며, 샤를 법칙 그래프는 절대온도 0K(-273.15℃)를 연장선으로 하는 <strong>원점을 지나는 직선(비례)</strong>입니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4단계: 정리하기 -->
+        <div class="step-pane" id="step-pane-4">
+          <div class="inquiry-card">
+            <h3 class="inq-title">✍️ [정리하기] 발견한 기체 법칙의 핵심 원리 요약</h3>
+            <div class="summary-cards-grid">
+              <div class="summary-law-box">
+                <h4>보일 법칙 (Boyle's Law)</h4>
+                <p>온도가 일정할 때, 일정량의 기체의 부피(V)는 압력(P)에 <strong>반비례</strong>한다.</p>
+                <code>P₁V₁ = P₂V₂ = 일정</code>
+              </div>
+              <div class="summary-law-box">
+                <h4>샤를 법칙 (Charles's Law)</h4>
+                <p>압력이 일정할 때, 일정량의 기체의 부피(V)는 절대온도(T)에 <strong>비례</strong>한다.</p>
+                <code>V₁ / T₁ = V₂ / T₂ = 일정</code>
+              </div>
+              <div class="summary-law-box">
+                <h4>보일·샤를 법칙 (Combined Gas Law)</h4>
+                <p>기체의 부피는 절대온도에 비례하고 압력에 반비례한다.</p>
+                <code>(P₁V₁) / T₁ = (P₂V₂) / T₂ = 일정</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5단계: 실생활 적용하기 -->
+        <div class="step-pane" id="step-pane-5">
+          <div class="inquiry-card">
+            <h3 class="inq-title">🌍 [적용하기] 실생활 속 기체 법칙 현상 탐구</h3>
+            <div class="realworld-cards-grid">
+              <article class="rw-card">
+                <div class="rw-icon">⛰️</div>
+                <div class="rw-content">
+                  <h4>높은 산에서 빵빵해지는 과자 봉지</h4>
+                  <span class="rw-badge boyle">보일 법칙</span>
+                  <p>산 위로 올라가면 대기압이 낮아지므로 봉지 속 기체의 부피가 팽창하여 빵빵해집니다.</p>
+                </div>
+              </article>
+
+              <article class="rw-card">
+                <div class="rw-icon">🤿</div>
+                <div class="rw-content">
+                  <h4>스쿠버 다이버의 수중 호흡과 감압병</h4>
+                  <span class="rw-badge boyle">보일 법칙</span>
+                  <p>깊은 물속에서 급상승하면 주변 수압이 급격히 낮아져 허파 속 공기가 팽창하거나 혈관 속 질소 기포가 커져 위험합니다.</p>
+                </div>
+              </article>
+
+              <article class="rw-card">
+                <div class="rw-icon">🎈</div>
+                <div class="rw-content">
+                  <h4>하늘을 나는 열기구</h4>
+                  <span class="rw-badge charles">샤를 법칙</span>
+                  <p>버너로 공기를 가열하면 부피가 팽창하면서 밀도가 작아져(가벼워져) 하늘로 떠오릅니다.</p>
+                </div>
+              </article>
+
+              <article class="rw-card">
+                <div class="rw-icon">🚗</div>
+                <div class="rw-content">
+                  <h4>여름철 자동차 타이어 공기압 상승</h4>
+                  <span class="rw-badge combined">보일·샤를 법칙</span>
+                  <p>뜨거운 아스팔트를 달리면 타이어 내부 기체 온도가 상승하여 부피가 팽창하려 하고 압력이 급격히 높아집니다.</p>
+                </div>
+              </article>
+
+              <article class="rw-card">
+                <div class="rw-icon">🏓</div>
+                <div class="rw-content">
+                  <h4>찌그러진 탁구공을 뜨거운 물에 넣기</h4>
+                  <span class="rw-badge charles">샤를 법칙</span>
+                  <p>뜨거운 물에 넣으면 탁구공 안의 공기 분자 운동이 활발해져 부피가 팽창하면서 공이 원래대로 펴집니다.</p>
+                </div>
+              </article>
+
+              <article class="rw-card">
+                <div class="rw-icon">💉</div>
+                <div class="rw-content">
+                  <h4>손가락으로 입구를 막은 주사기 누르기</h4>
+                  <span class="rw-badge boyle">보일 법칙</span>
+                  <p>주사기 피스톤을 힘주어 누르면 압력이 커지며 내부 공기 부피가 줄어듭니다.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 공통 데이터 및 내비게이션 주입 스크립트 -->
+  <script src="../../assets/js/labs-data.js"></script>
+  <script src="../../assets/js/lab-nav.js"></script>
+
+  <!-- 기체 법칙 전용 스크립트 -->
+  <script src="./script.js"></script>
+</body>
+</html>
