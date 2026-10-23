@@ -23,12 +23,12 @@
   --accent-amber: #f59e0b;
   --accent-rose: #f43f5e;
 
-  /* 중립 색상 (배경 및 텍스트) */
-  --bg-main: #f8fafc;
+  /* 중립 색상 (배경 및 텍스트) - 노란색 테마 적용 */
+  --bg-main: #fef9c3; /* 부드럽고 산뜻한 레몬 옐로우 배경 */
   --bg-surface: #ffffff;
   --bg-surface-elevated: #ffffff;
-  --border-light: #e2e8f0;
-  --border-subtle: #edf2f7;
+  --border-light: #fef08a; /* 노란색 테마에 맞춘 부드러운 테두리 */
+  --border-subtle: #fef9c3;
 
   --text-main: #0f172a;
   --text-muted: #64748b;
